@@ -1,29 +1,33 @@
 pipeline {
     agent {
         docker {
-            image 'python:latest' // Using the latest Python Docker image
-            args '-u root' // Run as root to avoid permission issues
+            image 'python:latest'
+            args '-u root'
         }
-    }
-    environment {
-        PYTHONUSERBASE = "${env.WORKSPACE}/.local" // Set a user base for pip installations
-        PATH = "${env.WORKSPACE}/.local/bin:${env.PATH}" // Add the local bin to PATH
     }
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'pip install --user pytest pytest-cov' // Install dependencies in user-specific directory
+                sh 'pip install pytest pytest-cov'
             }
         }
         stage('Run Tests') {
             steps {
-                sh 'pytest --junitxml=logs/unitreport.xml tests/' // Run pytest and generate a JUnit XML report
+                sh 'mkdir -p logs'
+                script {
+                    try {
+                        sh 'pytest --junitxml=logs/unitreport.xml tests/'
+                    } catch (Exception e) {
+                        echo "pytest failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
     }
     post {
         always {
-            junit testResults: 'logs/unitreport.xml' // Archive the test results
+            junit testResults: 'logs/unitreport.xml', allowEmptyResults: true
         }
     }
 }
