@@ -1,22 +1,24 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'composer:latest'
+        }
+    }
     stages {
-        stage('Checkout SCM') {
+        stage('Build') {
             steps {
-                // Checkout the code from the repository
-                git branch: 'main', url: 'https://github.com/Thrith10/FlaskDemo.git'
+                sh 'composer install'
             }
         }
-        stage('OWASP Dependency-Check Vulnerabilities') {
+        stage('Test') {
             steps {
-                dependencyCheck additionalArguments: ''' 
-                            -o './'
-                            -s './'
-                            -f 'ALL' 
-                            --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities'
-        
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                sh './vendor/bin/phpunit --log-junit logs/unitreport.xml -c tests/phpunit.xml tests'
             }
+        }
+    }
+    post {
+        always {
+            junit testResults: 'logs/unitreport.xml'
         }
     }
 }
