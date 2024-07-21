@@ -38,9 +38,4 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            junit 'logs/unitreport.xml'
-        }
-    }
 }
