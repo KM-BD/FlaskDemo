@@ -1,17 +1,29 @@
 pipeline {
-    agent {
-        docker { image 'node:14' }
-    }
+    agent any
     stages {
-        stage('Build') {
+        stage('Checkout SCM') {
             steps {
-                sh 'npm install'
+                // Checkout the code from the repository
+                git branch: 'main', url: 'https://github.com/Thrith10/FlaskDemo.git'
             }
         }
-        stage('Test') { 
+        stage('Build') {
             steps {
-                sh 'chmod +x jenkins/scripts/test.sh'
-                sh 'jenkins/scripts/test.sh'
+                script {
+                    docker.image('node:14').inside {
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    docker.image('node:14').inside {
+                        sh 'chmod +x jenkins/scripts/test.sh'
+                        sh 'jenkins/scripts/test.sh'
+                    }
+                }
             }
         }
         stage('OWASP Dependency-Check Vulnerabilities') {
@@ -24,6 +36,11 @@ pipeline {
         
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
+        }
+    }
+    post {
+        always {
+            junit 'logs/unitreport.xml'
         }
     }
 }
