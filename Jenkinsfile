@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:latest' // Using the latest Python Docker image
+            args '-u root' // Run as root to avoid permission issues
         }
     }
     environment {
@@ -11,7 +12,7 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'pip install --user -r requirements.txt' // Install dependencies in user-specific directory
+                sh 'pip install --user pytest pytest-cov' // Install dependencies in user-specific directory
             }
         }
         stage('Run Tests') {
