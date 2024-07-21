@@ -3,10 +3,16 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
 class AppTest(unittest.TestCase):
     def setUp(self):
-        self.driver = webdriver.Chrome()  # You can use HtmlUnitDriver or FirefoxDriver as well
+        #self.driver = webdriver.Chrome()  # You can use HtmlUnitDriver or FirefoxDriver as well
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
         self.url = "http://192.168.1.9"  # Local port http://127.0.0.1:5000
         self.valid_password = "ValidPassword123"
