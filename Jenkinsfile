@@ -1,24 +1,24 @@
 pipeline {
     agent {
         docker {
-            image 'composer:latest'
+            image 'python:latest' // Using the latest Python Docker image
         }
     }
     stages {
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                sh 'composer install'
+                sh 'pip install -r requirements.txt' // Install dependencies from requirements.txt
             }
         }
-        stage('Test') {
+        stage('Run Tests') {
             steps {
-                sh './vendor/bin/phpunit --log-junit logs/unitreport.xml -c tests/phpunit.xml tests'
+                sh 'pytest --junitxml=logs/unitreport.xml tests/' // Run pytest and generate a JUnit XML report
             }
         }
     }
     post {
         always {
-            junit testResults: 'logs/unitreport.xml'
+            junit testResults: 'logs/unitreport.xml' // Archive the test results
         }
     }
 }
