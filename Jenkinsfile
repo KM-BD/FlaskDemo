@@ -1,13 +1,14 @@
 pipeline {
-    agent none
+    agent any
+
     stages {
         stage('Prepare Scripts') {
-            agent any
             steps {
                 sh 'git update-index --chmod=+x jenkins/scripts/deploy.sh'
                 sh 'git update-index --chmod=+x jenkins/scripts/kill_integration.sh'
             }
         }
+
         stage('Install Dependencies') {
             agent {
                 docker {
@@ -19,6 +20,7 @@ pipeline {
                 sh 'pip install pytest pytest-cov selenium webdriver-manager'
             }
         }
+
         stage('Run Unit Tests') {
             agent {
                 docker {
@@ -43,10 +45,10 @@ pipeline {
                 }
             }
         }
+
         stage('Integration UI Test') {
             parallel {
                 stage('Deploy') {
-                    agent any
                     steps {
                         sh './jenkins/scripts/deploy.sh'
                         input message: 'Finished using the web site? (Click "Proceed" to continue)'
@@ -61,11 +63,19 @@ pipeline {
                         }
                     }
                     steps {
-                        sh 'pip install selenium webdriver-manager'
+                        sh '''
+                            pip install selenium webdriver-manager pytest
+                            apt-get update && apt-get install -y wget unzip
+                            wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                            apt install -y ./google-chrome-stable_current_amd64.deb
+                            wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
+                            unzip chromedriver_linux64.zip
+                            mv chromedriver /usr/local/bin/
+                        '''
                         sh 'mkdir -p logs'
                         script {
                             try {
-                                sh 'python test_app.py --junitxml=logs/integration_test_results.xml'
+                                sh 'pytest test_app.py --junitxml=logs/integration_test_results.xml'
                             } catch (Exception e) {
                                 echo "Integration tests failed: ${e.message}"
                                 currentBuild.result = 'FAILURE'
@@ -81,9 +91,10 @@ pipeline {
             }
         }
     }
+
     post {
         always {
-            junit testResults: 'logs/unitreport.xml', allowEmptyResults: true
+            junit testResults: 'logs/**/*.xml', allowEmptyResults: true
         }
     }
 }
