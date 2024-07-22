@@ -9,6 +9,7 @@ pipeline {
                 }
             }
         }
+    }
 
     stages {
         stage('Prepare Scripts') {
