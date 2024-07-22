@@ -56,13 +56,6 @@ pipeline {
 
         stage('Integration UI Test') {
             parallel {
-                stage('Deploy') {
-                    steps {
-                        sh './jenkins/scripts/deploy.sh'
-                        input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                        sh './jenkins/scripts/kill_integration.sh'
-                    }
-                }
                 stage('Headless Browser Test') {
                     agent {
                         docker {
@@ -88,6 +81,13 @@ pipeline {
                                 echo "Integration tests failed: ${e.message}"
                                 currentBuild.result = 'FAILURE'
                             }
+                        }
+                    }
+                    stage('Deploy') {
+                        steps {
+                            sh './jenkins/scripts/deploy.sh'
+                            input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                            sh './jenkins/scripts/kill_integration.sh'
                         }
                     }
                     post {
