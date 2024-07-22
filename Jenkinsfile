@@ -36,23 +36,25 @@ pipeline {
             }
         }
 
-        stage('Composer Build and Test') {
+        stage('Composer Build') {
             agent {
                 docker {
                     image 'composer:latest'
                 }
             }
             steps {
-                stage('Build') {
-                    steps {
-                        sh 'composer install'
-                    }
+                sh 'composer install'
+            }
+        }
+
+        stage('Composer Test') {
+            agent {
+                docker {
+                    image 'composer:latest'
                 }
-                stage('Test') {
-                    steps {
-                        sh './vendor/bin/phpunit --log-junit logs/unitreport.xml -c tests/phpunit.xml tests'
-                    }
-                }
+            }
+            steps {
+                sh './vendor/bin/phpunit --log-junit logs/unitreport.xml -c tests/phpunit.xml tests'
             }
             post {
                 always {
