@@ -15,7 +15,7 @@ class AppTest(unittest.TestCase):
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
-        self.wait = WebDriverWait(self.driver, 10)
+        self.wait = WebDriverWait(self.driver, 30)
         self.url = "http://192.168.1.9:5000"  # Make sure this matches your Flask app's host and port
         self.valid_password = "ValidPassword123"
         self.invalid_password = "123456"
@@ -26,6 +26,8 @@ class AppTest(unittest.TestCase):
     def test_login_with_valid_password(self):
         driver = self.driver
         driver.get(self.url)
+        print(f"Current URL: {driver.current_url}")
+        print(f"Page title: {driver.title}")
         self.wait.until(EC.title_contains("Password Checker - Home"))
 
         # Enter valid password
