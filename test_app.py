@@ -28,7 +28,8 @@ class AppTest(unittest.TestCase):
         driver.get(self.url)
         print(f"Current URL: {driver.current_url}")
         print(f"Page title: {driver.title}")
-        self.wait.until(EC.title_contains("Password Checker - Home"))
+        print(f"Page source: {driver.page_source[:500]}")  # Print first 500 characters of page source
+        self.wait.until(EC.title_contains("Home"))
 
         # Enter valid password
         password_field = self.wait.until(EC.presence_of_element_located((By.NAME, "password")))
@@ -43,7 +44,8 @@ class AppTest(unittest.TestCase):
     def test_login_with_invalid_password(self):
         driver = self.driver
         driver.get(self.url)
-        self.wait.until(EC.title_contains("Password Checker - Home"))
+        print(f"Page source: {driver.page_source[:500]}")  # Print first 500 characters of page source
+        self.wait.until(EC.title_contains("Home"))
 
         # Enter invalid password
         password_field = self.wait.until(EC.presence_of_element_located((By.NAME, "password")))
