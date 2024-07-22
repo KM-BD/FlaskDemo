@@ -59,7 +59,7 @@ pipeline {
                 stage('Headless Browser Test') {
                     agent {
                         docker {
-                            image 'python:3.9'  // or whichever version you're using
+                            image 'python:3.9' // or whichever version you're using
                             args '-u root'
                         }
                     }
@@ -83,17 +83,17 @@ pipeline {
                             }
                         }
                     }
-                    stage('Deploy') {
-                        steps {
-                            sh './jenkins/scripts/deploy.sh'
-                            input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                            sh './jenkins/scripts/kill_integration.sh'
-                        }
-                    }
                     post {
                         always {
                             junit 'logs/integration_test_results.xml'
                         }
+                    }
+                }
+                stage('Deploy') {
+                    steps {
+                        sh './jenkins/scripts/deploy.sh'
+                        input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                        sh './jenkins/scripts/kill_integration.sh'
                     }
                 }
             }
