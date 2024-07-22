@@ -19,7 +19,7 @@ class AppTest(unittest.TestCase):
         chrome_options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         self.wait = WebDriverWait(self.driver, 30)  # Increased timeout to 30 seconds
-        self.url = "http://192.168.1.9:80"  # Make sure this matches your Flask app's host and port
+        self.url = "http://192.168.1.9"  # Make sure this matches your Flask app's host and port
         self.valid_password = "ValidPassword123"
         self.invalid_password = "123456"
         logger.info(f"Setting up test with URL: {self.url}")
