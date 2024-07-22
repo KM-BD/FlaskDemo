@@ -28,6 +28,33 @@ services:
       - postgresql:/var/lib/postgresql
       - postgresql_data:/var/lib/postgresql/data
 
+  nginxwebsvr:
+    image: nginx:alpine
+    container_name: nginxwebsvr
+    ports:
+    - "80:80"
+
+  mysqldb:
+    image: mysql:5.7
+    restart: always
+    volumes:
+    - ./mysql_data:/var/lib/mysql
+    environment:
+        MYSQL_ROOT_PASSWORD: pass
+        MYSQL_DATABASE: testdb
+        MYSQL_USER: user
+        MYSQL_PASSWORD: pass
+
+  gitserver:
+    build:
+      context: ./repos
+      dockerfile: gitserver.Dockerfile
+    container_name: gitserver
+    ports:
+      - "3000:3000"
+    volumes:
+      - git_repo:/home/git
+
 volumes:
   sonarqube_conf:
   sonarqube_data:
@@ -35,3 +62,4 @@ volumes:
   sonarqube_extensions:
   postgresql:
   postgresql_data:
+  git_repo:
