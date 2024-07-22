@@ -70,7 +70,7 @@ pipeline {
                             wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
                             apt install -y ./google-chrome-stable_current_amd64.deb
                             wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
-                            unzip -ochromedriver_linux64.zip
+                            unzip -o chromedriver_linux64.zip
                             mv chromedriver /usr/local/bin/
                         '''
                         sh 'mkdir -p logs'
