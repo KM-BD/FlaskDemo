@@ -66,16 +66,19 @@ pipeline {
                 stage('Headless Browser Test') {
                     agent {
                         docker {
-                            image 'python:latest'
+                            image 'python:3.9'  // or whichever version you're using
                             args '-u root'
                         }
                     }
                     steps {
                         sh '''
-                            pip install selenium webdriver-manager pytest
+                            pip install selenium webdriver-manager pytest flask
                             apt-get update && apt-get install -y wget unzip
                             wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
                             apt install -y ./google-chrome-stable_current_amd64.deb
+                            wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
+                            unzip chromedriver_linux64.zip
+                            mv chromedriver /usr/local/bin/
                         '''
                         sh 'mkdir -p logs'
                         script {
