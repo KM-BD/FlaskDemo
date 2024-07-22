@@ -55,44 +55,47 @@ pipeline {
         }
 
         stage('Integration UI Test') {
-            agent {
-                docker {
-                    image 'python:3.9' // or whichever version you're using
-                    args '-u root'
-                }
-            }
-            steps {
-                sh '''
-                    pip install selenium webdriver-manager pytest flask
-                    apt-get update && apt-get install -y wget unzip
-                    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-                    apt install -y ./google-chrome-stable_current_amd64.deb
-                    wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
-                    unzip -o chromedriver_linux64.zip
-                    mv chromedriver /usr/local/bin/
-                '''
-                sh 'mkdir -p logs'
-                script {
-                    try {
-                        sh 'pytest test_app.py --junitxml=logs/integration_test_results.xml'
-                    } catch (Exception e) {
-                        echo "Integration tests failed: ${e.message}"
-                        currentBuild.result = 'FAILURE'
+            parallel {
+                stage('Headless Browser Test') {
+                    agent {
+                        docker {
+                            image 'python:3.9' // or whichever version you're using
+                            args '-u root'
+                        }
+                    }
+                    steps {
+                        sh '''
+                            pip install selenium webdriver-manager pytest flask
+                            apt-get update && apt-get install -y wget unzip
+                            wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+                            apt install -y ./google-chrome-stable_current_amd64.deb
+                            wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
+                            unzip -ochromedriver_linux64.zip
+                            mv chromedriver /usr/local/bin/
+                        '''
+                        sh 'mkdir -p logs'
+                        script {
+                            try {
+                                sh 'pytest test_app.py --junitxml=logs/integration_test_results.xml'
+                            } catch (Exception e) {
+                                echo "Integration tests failed: ${e.message}"
+                                currentBuild.result = 'FAILURE'
+                            }
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'logs/integration_test_results.xml'
+                        }
                     }
                 }
-            }
-            post {
-                always {
-                    junit 'logs/integration_test_results.xml'
+                stage('Deploy') {
+                    steps {
+                        sh './jenkins/scripts/deploy.sh'
+                        input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                        sh './jenkins/scripts/kill_integration.sh'
+                    }
                 }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh './jenkins/scripts/deploy.sh'
-                input message: 'Finished using the web site? (Click "Proceed" to continue)'
-                sh './jenkins/scripts/kill_integration.sh'
             }
         }
     }
