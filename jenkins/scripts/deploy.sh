@@ -4,7 +4,7 @@ set -x
 # Remove existing container if it exists
 docker rm -f my-flask-app || true
 #docker run -d -p 5000:5000 --name my-flask-app -v "/mnt/c/mods/y2t3/ssd/own github/flaskdemo" my-flask-app:latest
-docker run -d -p 0.0.0.0:5000:5000 --name my-flask-app -v "/mnt/c/mods/y2t3/ssd/own github/flaskdemo" my-flask-app
+docker run -d -p 5000:5000 --name my-flask-app -v "/mnt/c/mods/y2t3/ssd/own github/flaskdemo" my-flask-app
 
 sleep 1
 set +x
