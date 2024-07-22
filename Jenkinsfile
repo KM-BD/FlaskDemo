@@ -66,7 +66,8 @@ pipeline {
                     steps {
                         sh '''
                             pip install selenium webdriver-manager pytest flask
-                            apt-get update && apt-get install -y wget unzip
+                            apt-get update
+                            apt-get install -y wget unzip --fix-missing || apt-get install -y wget unzip --fix-missing
                             wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
                             apt install -y ./google-chrome-stable_current_amd64.deb
                             wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip
