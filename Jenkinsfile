@@ -2,6 +2,13 @@ pipeline {
     agent any
 
     stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Thrith10/FlaskDemo.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -99,11 +106,23 @@ pipeline {
                 }
             }
         }
+
+        stage('Code Quality Check via SonarQube') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarQube_Flask'
+                    withSonarQubeEnv('SonarQube_Flask') {
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=FlaskDemo -Dsonar.sources=."
+                    }
+                }
+            }
+        }
     }
 
     post {
         always {
             junit testResults: 'logs/**/*.xml', allowEmptyResults: true
+            recordIssues enabledForFailure: true, tool: sonarQube()
         }
     }
 }
