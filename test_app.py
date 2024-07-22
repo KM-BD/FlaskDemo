@@ -14,7 +14,7 @@ class AppTest(unittest.TestCase):
         chrome_options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(options=chrome_options)
         self.wait = WebDriverWait(self.driver, 10)
-        self.url = "http://127.0.0.1:5000"  # Local port http://127.0.0.1:5000, http://192.168.1.9
+        self.url = "http://192.168.1.9"  # Local port http://127.0.0.1:5000, http://192.168.1.9
         self.valid_password = "ValidPassword123"
         self.invalid_password = "123456"
     
