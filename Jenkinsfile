@@ -2,6 +2,15 @@ pipeline {
     agent any
 
     stages {
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build('my-flask-app:latest', '-f Dockerfile.flask .')
+                }
+            }
+        }
+
+    stages {
         stage('Prepare Scripts') {
             steps {
                 sh 'git update-index --chmod=+x jenkins/scripts/deploy.sh'
