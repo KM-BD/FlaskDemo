@@ -9,9 +9,7 @@ pipeline {
                 }
             }
         }
-    }
 
-    stages {
         stage('Prepare Scripts') {
             steps {
                 sh 'git update-index --chmod=+x jenkins/scripts/deploy.sh'
