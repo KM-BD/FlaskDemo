@@ -34,7 +34,7 @@ with open('10-million-password-list-top-1000.txt') as f:
 home_page = '''
 <!doctype html>
 <html>
-<head><title>Home</title></head>
+<head><title>Password Checker - Home</title></head>
 <body>
     <h1>Enter your password</h1>
     <form method="post">
