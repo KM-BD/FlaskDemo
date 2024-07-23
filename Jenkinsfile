@@ -5,7 +5,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Thrith10/FlaskDemo.git'
+                git branch: 'main', url: 'https://github.com/KM-BD/FlaskDemo.git'
             }
         }
 
@@ -110,8 +110,8 @@ pipeline {
         stage('Code Quality Check via SonarQube') {
             steps {
                 script {
-                    def scannerHome = tool 'SonarQube_Flask'
-                    withSonarQubeEnv('SonarQube_Flask') {
+                    def scannerHome = tool 'flaskWebAppSonarQube'
+                    withSonarQubeEnv('flaskWebAppSonarQube') {
                         sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=FlaskDemo -Dsonar.sources=."
                     }
                 }
