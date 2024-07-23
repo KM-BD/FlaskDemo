@@ -10,8 +10,8 @@ WORKDIR /home/git
 RUN which git-http-server
 
 RUN git init --bare repository.git \
-    && git config --global user.name "Reness Ravichandran" \
-    && git config --global user.email "2201427@sit.singaporetech.edu.sg"
+    && git config --global user.name "De Chavez Karlo Miguel Bautista" \
+    && git config --global user.email "2201430@sit.singaporetech.edu.sg"
 
 
 ENTRYPOINT ["tini", "--", "git-http-server", "-p", "3000", "/home/git"]
